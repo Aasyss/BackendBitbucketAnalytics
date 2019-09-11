@@ -19,12 +19,14 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import path, include
 
-# from bitbucket.views import BitBucketLogin
+import bitbucket
+from bitbucket.views import BitBucketLogin
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^rest-auth/', include('rest_auth.urls')),
     url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
-    # url(r'^rest-auth/bitbucket/$', BitBucketLogin.as_view(), name='bb_login')
+    url(r'^rest-auth/bitbucket', BitBucketLogin.as_view(), name='bb_login'),
+    path('',include('bitbucket.urls'))
 
 ]

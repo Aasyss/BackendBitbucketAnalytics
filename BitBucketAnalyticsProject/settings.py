@@ -147,10 +147,12 @@ REST_FRAMEWORK = {
 }
 #enabling cross origin local apis and listing it in whitelist
 CORS_ORIGIN_WHITELIST = (
-    'http://localhost:4200',
-    'http://localhost:8000',
+    'http://127.0.0.1:4200',
+    'http://127.0.0.1:8000',
 )
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ACCOUNT_ADAPTER ='allauth.account.adapter.DefaultAccountAdapter'
+APPEND_SLASH = False
+
 
