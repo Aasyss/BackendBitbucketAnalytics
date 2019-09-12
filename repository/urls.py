@@ -13,20 +13,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.conf.urls import url
-from django.contrib import admin
-from django.http import HttpResponse
-from django.shortcuts import render
 from django.urls import path, include
+from rest_framework import routers
 
-import bitbucket
-from bitbucket.views import BitBucketLogin
+from repository.views import RepositoryViewSet
+
+router = routers.DefaultRouter()
+router.register('repositories', RepositoryViewSet)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    url(r'^rest-auth/', include('rest_auth.urls')),
-    url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
-    url(r'^rest-auth/bitbucket', BitBucketLogin.as_view(), name='bb_login'),
-    path('',include('repository.urls'))
-
+    path('',include(router.urls)),
 ]

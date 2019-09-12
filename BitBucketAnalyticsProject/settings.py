@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 
     #own applications
     'bitbucket',
+    'repository',
 ]
 
 MIDDLEWARE = [
@@ -155,4 +156,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 ACCOUNT_ADAPTER ='allauth.account.adapter.DefaultAccountAdapter'
 APPEND_SLASH = False
 
+# REST_AUTH_SERIALIZERS = {
+#     'LOGIN_SERIALIZER': 'bitbucket.SocialLoginSerializerNew.SocialLoginSerializerNew',
+#     'TOKEN_SERIALIZER': 'rest_auth.serializers.TokenSerializer',
+# }
 

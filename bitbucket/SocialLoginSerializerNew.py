@@ -18,22 +18,8 @@ from rest_framework import serializers
 from requests.exceptions import HTTPError
 
 
-class SocialAccountSerializer(serializers.ModelSerializer):
-    """
-    serialize allauth SocialAccounts for use with a REST API
-    """
-    class Meta:
-        model = SocialAccount
-        fields = (
-            'id',
-            'provider',
-            'uid',
-            'last_login',
-            'date_joined',
-        )
 
-
-class SocialLoginSerializer(serializers.Serializer):
+class SocialLoginSerializerNew(serializers.Serializer):
     access_token = serializers.CharField(required=False, allow_blank=True)
     code = serializers.CharField(required=False, allow_blank=True)
 
@@ -112,13 +98,11 @@ class SocialLoginSerializer(serializers.Serializer):
             access_token = token['access_token']
             refresh_token = token['refresh_token']
             expires_in = token['expires_in']
-
-
         else:
             raise serializers.ValidationError(
                 _("Incorrect input. access_token or code is required."))
 
-        social_token = adapter.parse_token({'access_token': access_token,'refresh_token':refresh_token,'expires_in':expires_in})
+        social_token = adapter.parse_token({'access_token': access_token,'refresh_token': refresh_token,'expires_in':expires_in})
         social_token.app = app
 
         try:
@@ -150,71 +134,3 @@ class SocialLoginSerializer(serializers.Serializer):
         return attrs
 
 
-class SocialConnectMixin(object):
-    def get_social_login(self, *args, **kwargs):
-        """
-        Set the social login process state to connect rather than login
-        Refer to the implementation of get_social_login in base class and to the
-        allauth.socialaccount.helpers module complete_social_login function.
-        """
-        social_login = super(SocialConnectMixin, self).get_social_login(*args, **kwargs)
-        social_login.state['process'] = AuthProcess.CONNECT
-        return social_login
-
-
-class SocialConnectSerializer(SocialConnectMixin, SocialLoginSerializer):
-    pass
-
-
-class RegisterSerializer(serializers.Serializer):
-    username = serializers.CharField(
-        max_length=get_username_max_length(),
-        min_length=allauth_settings.USERNAME_MIN_LENGTH,
-        required=allauth_settings.USERNAME_REQUIRED
-    )
-    email = serializers.EmailField(required=allauth_settings.EMAIL_REQUIRED)
-    password1 = serializers.CharField(write_only=True)
-    password2 = serializers.CharField(write_only=True)
-
-    def validate_username(self, username):
-        username = get_adapter().clean_username(username)
-        return username
-
-    def validate_email(self, email):
-        email = get_adapter().clean_email(email)
-        if allauth_settings.UNIQUE_EMAIL:
-            if email and email_address_exists(email):
-                raise serializers.ValidationError(
-                    _("A user is already registered with this e-mail address."))
-        return email
-
-    def validate_password1(self, password):
-        return get_adapter().clean_password(password)
-
-    def validate(self, data):
-        if data['password1'] != data['password2']:
-            raise serializers.ValidationError(_("The two password fields didn't match."))
-        return data
-
-    def custom_signup(self, request, user):
-        pass
-
-    def get_cleaned_data(self):
-        return {
-            'username': self.validated_data.get('username', ''),
-            'password1': self.validated_data.get('password1', ''),
-            'email': self.validated_data.get('email', '')
-        }
-
-    def save(self, request):
-        adapter = get_adapter()
-        user = adapter.new_user(request)
-        self.cleaned_data = self.get_cleaned_data()
-        adapter.save_user(request, user, self)
-        self.custom_signup(request, user)
-        setup_user_email(request, user, [])
-        return user
-
-
-class VerifyEmailSerializer(serializers.Serializer):
-    key = serializers.CharField()
