@@ -14,11 +14,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf.urls import url
-from django.contrib import admin
-from django.urls import path, include
 
 from bitbucket import views
 
 urlpatterns = [
-
+    url('all-repository', views.MyApi.as_view())
 ]
