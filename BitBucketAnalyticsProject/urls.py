@@ -15,11 +15,8 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from django.http import HttpResponse
-from django.shortcuts import render
 from django.urls import path, include
 
-import bitbucket
 from bitbucket.views import BitBucketLogin
 
 urlpatterns = [

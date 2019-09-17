@@ -12,4 +12,10 @@ class RepositoryReadSerializer(serializers.ModelSerializer):
 class RepositoryWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Repository
-        fields = "__all__"
+        exclude=['user']
+        # fields = "__all__"
+
+    def create(self, validated_data):
+        user = self.context['user']
+        repository = Repository.objects.create(user = user,**validated_data)
+        return repository

@@ -157,7 +157,7 @@ ACCOUNT_ADAPTER ='allauth.account.adapter.DefaultAccountAdapter'
 APPEND_SLASH = False
 
 # REST_AUTH_SERIALIZERS = {
-#     'LOGIN_SERIALIZER': 'bitbucket.SocialLoginSerializerNew.SocialLoginSerializerNew',
+#     'LOGIN_SERIALIZER': 'bitbucket.customSerializer.SocialLoginSerializer',
 #     'TOKEN_SERIALIZER': 'rest_auth.serializers.TokenSerializer',
 # }
 
