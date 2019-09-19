@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
     url(r'^rest-auth/bitbucket', BitBucketLogin.as_view(), name='bb_login'),
     path('',include('bitbucket.urls')),
-    path('',include('repository.urls'))
+    path('',include('repository.urls')),
+    path('',include('commit.urls')),
 
 ]

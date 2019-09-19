@@ -147,6 +147,9 @@ REST_FRAMEWORK = {
     )
 
 }
+REST_AUTH_SERIALIZERS = {
+    'TOKEN_SERIALIZER': 'bitbucket.customTokenSerializer.CustomTokenSerializer',
+}
 #enabling cross origin local apis and listing it in whitelist
 CORS_ORIGIN_WHITELIST = (
     'http://127.0.0.1:4200',
