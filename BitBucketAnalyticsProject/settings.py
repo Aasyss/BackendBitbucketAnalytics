@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     #own applications
     'bitbucket',
     'repository',
+    'commit',
 ]
 
 MIDDLEWARE = [
@@ -160,4 +161,5 @@ APPEND_SLASH = False
 #     'LOGIN_SERIALIZER': 'bitbucket.customSerializer.SocialLoginSerializer',
 #     'TOKEN_SERIALIZER': 'rest_auth.serializers.TokenSerializer',
 # }
+#
 
