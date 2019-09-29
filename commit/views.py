@@ -1,13 +1,17 @@
-from rest_framework import generics
+from django.db.models import Count
+from django.http import JsonResponse
+from django.views.generic import ListView
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from commit.commitSerializer import CommitSerializer
 from commit.models import Commit
 from repository.models import Repository
 
 
-class CommitList(generics.ListAPIView):
+class CommitList(ListAPIView):
     queryset = Commit.objects.all()
     serializer_class =CommitSerializer
     permission_classes = [IsAuthenticated]
@@ -21,7 +25,64 @@ class CommitList(generics.ListAPIView):
         serializer = CommitSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    #
-    # def get_serializer_context(self):
-    #     user = {'user':self.request.user}
-    #     return user
+'''
+    APIView for getting the commit count by users in a repository
+    select data is used for formatting the date in YYYY-MM-DD format
+'''
+class UserCommits(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request,slug):
+        repository= Repository.objects.get(slug=slug)
+        #  SQL equivalent => select user,count(user) as count from commit_commit where repository_id=16 group by user;
+        user_commit_count = Commit.objects.values('user').annotate(commit_count=Count('user')).filter(repository=repository)
+
+        return Response(user_commit_count)
+
+
+'''
+    APIView for getting the commit count by a specific date
+    select data is used for formatting the date in YYYY-MM-DD format
+'''
+class DateCommits(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request,slug):
+        repository = Repository.objects.get(slug=slug)
+        select_data = {"date": """strftime('%%Y-%%m-%%d', date)"""}
+        # SQL equivalent => select strftime('%Y-%m-%d',date) as date,count(strftime('%Y-%m-%d',date)) as count from commit_commit where repository_id=19 group by strftime('%Y-%m-%d',date);
+        date_commit_count = Commit.objects.extra(select=select_data).values('date').annotate(Count('date')).filter(repository=repository)
+
+        return Response(date_commit_count)
+
+'''
+    APIView for getting the user's commit count in a specific date
+    select data is used for formatting the date in YYYY-MM-DD format
+'''
+class UserDateCommits(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request,slug):
+        repository = Repository.objects.get(slug=slug)
+        user_date_commit_counts = {}
+        select_data = {"date": """strftime('%%Y-%%m-%%d', date)"""}
+        # SQL eqivalent => select user,count(user) as count,strftime('%Y-%m-%d',date) as date from commit_commit where repository_id=16 group by strftime('%Y-%m-%d',date);
+        date_commit_count = Commit.objects.extra(select=select_data).values('date','user').annotate(Count('user')).filter(repository=repository).order_by('date')
+        user_list = set(Commit.objects.values_list('user',flat=True).filter(repository=repository))
+        for commit in date_commit_count:
+            if not commit['date'] in user_date_commit_counts.keys():
+                print('if')
+                user_date_commit_counts[commit['date']] = [{commit['user']: commit['user__count']}]
+                # for user in user_list:
+                #     if not user_date_commit_counts[commit['date']][0].keys == user:
+                #         user_date_commit_counts[commit['date']].append({user: 0})
+                user = user_date_commit_counts[commit['date']]
+                print(user)
+            else:
+                print('else')
+                user_date_commit_counts[commit['date']].append({commit['user'] : commit['user__count']})
+
+        return Response(user_date_commit_counts)

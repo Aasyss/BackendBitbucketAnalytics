@@ -148,6 +148,7 @@ REST_FRAMEWORK = {
 
 }
 REST_AUTH_SERIALIZERS = {
+    'LOGIN_SERIALIZER':'bitbucket.customTokenSerializer.CustomSocialLoginSerializer',
     'TOKEN_SERIALIZER': 'bitbucket.customTokenSerializer.CustomTokenSerializer',
 }
 #enabling cross origin local apis and listing it in whitelist
