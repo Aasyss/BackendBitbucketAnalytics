@@ -27,5 +27,7 @@ urlpatterns = [
     path('',include('bitbucket.urls')),
     path('',include('repository.urls')),
     path('',include('commit.urls')),
+    path('',include('file.urls')),
+
 
 ]

@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'bitbucket',
     'repository',
     'commit',
+    'file',
 ]
 
 MIDDLEWARE = [
